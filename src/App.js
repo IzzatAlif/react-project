@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { Amplify } from "aws-amplify";
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import awsExports from "./aws-exports";
+import Button from "@mui/material/Button";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 
-function App() {
+Amplify.configure(awsExports);
+
+function CustomAppbar({ signOut, user }) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Hello {user.attributes.email}
+        </Typography>
+        <Button variant="contained" onClick={signOut}>
+          Sign Out
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 }
 
-export default App;
+function App({ signOut, user }) {
+  return (
+    <>
+      <CustomAppbar signOut={signOut} user={user} />
+      <h1>Landing Page</h1>
+      <h1>Hello {user.username}</h1>
+      
+      {/* <Button variant="contained" onClick={signOut}> Sign Out </Button> */}
+    
+    {console.log(user, "xxx")}
+    </>
+  );
+}
+
+export default withAuthenticator(App);
