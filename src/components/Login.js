@@ -1,19 +1,37 @@
 import React, { useState } from "react";
+import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 import UserPool from "../UserPool";
 
-const Signup = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmit = (event) => {
-    event.preventDefault(); // Fixed the typo, changed "prevetDefault" to "preventDefault"
-    UserPool.signUp(email, password, [], null , (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(data);
-      }
+
+    event.preventDefault();
+     
+    const user = new CognitoUser({
+        Username: email,
+        Pool: UserPool
     });
+
+    const authDetails = new AuthenticationDetails({
+        UserName:email,
+        Password: password,
+    })
+
+    user.authenticateUser(authDetails,{
+        onSuccess:(data) => {
+            console.log("onSuccess: ", data);
+        },
+        onFailure:(err) => {
+            console.error("onFailure: ", err);
+        },
+        newPasswordRequired:(data) => {
+            console.log("newPasswordRequired: ", data);
+        },
+    })
+
   };
 
   return (
@@ -37,10 +55,10 @@ const Signup = () => {
           onChange={(event) => setPassword(event.target.value)}
         />
 
-        <button type="submit">Signup</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
 };
 
-export default Signup;
+export default Login;
